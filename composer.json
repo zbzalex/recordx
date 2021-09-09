@@ -13,9 +13,13 @@
         "phpunit/phpunit": "^5.7",
         "pimple/pimple": "^3.2"
     },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
     "autoload-dev": {
         "psr-4": {
-            "": "src/",
             "Tests\\": "tests/"
         }
     }
