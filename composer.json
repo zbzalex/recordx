@@ -1,4 +1,14 @@
 {
+    "name": "zbzalex/recordx",
+    "type": "library",
+    "description": "The simple dao for php.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sasha Broslavskiy",
+            "email": "sasha.broslavskiy@gmail.com"
+        }
+    ],
     "require": {
         "phpunit/phpunit": "^5.7",
         "pimple/pimple": "^3.2"
