@@ -146,9 +146,9 @@ abstract class Dao
         if (is_array($result) && count($result) > 0) {
 
             $this->_lastQueryString = $result[0];
-            $this->_lastQueryParams = $args;
+            $this->_lastQueryParams = $args[0];
 
-            $st = $this->connection->executeNativeQuery($result[0], $args);
+            $st = $this->connection->executeNativeQuery($result[0], $args[0]);
 
             $this->_error = $st->errorInfo();
 
