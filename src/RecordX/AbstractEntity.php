@@ -15,8 +15,9 @@ abstract class AbstractEntity
     {
         return [
             "id" => [
-                "primaryKey" => true
-            ]
+                "type" => "int",
+                "primaryKey" => true,
+            ],
         ];
     }
 
@@ -24,15 +25,17 @@ abstract class AbstractEntity
     {
         $columns = $this->getColumns();
         $type = isset($columns[$key]) && isset($columns[$key]['type']) ? $columns[$key]['type'] : "string";
-        $defaultValue = isset($columns[$key]) && isset($columns[$key]['defaultValue']) ? $columns[$key]['defaultValue'] : $this->_getDefaultValueByType($type);
-
+        $defaultValue = isset($columns[$key]) && isset($columns[$key]['defaultValue']) ? $columns[$key]['defaultValue'] : static::getDefaultValueByType($type);
+        
         return isset($columns[$key]) && isset($this->values[$key]) ? $this->values[$key] : $defaultValue;
     }
 
-    private function _getDefaultValueByType($type)
+    public static function getDefaultValueByType($type)
     {
         switch ($type) {
             case "int":
+            case "float":
+            case "double":
                 return 0;
             default:
                 return null;
@@ -103,13 +106,13 @@ abstract class AbstractEntity
 
         return $parent;
     }
-    
+
     public function getSqlFormatTableName()
     {
         $tableName = $this->getTableName();
 
         return is_array($tableName) && count($tableName) == 2
-            ? "`" . $tableName[0] . "`.`" . $tableName[1] . "`"
-            : "`" . $tableName . "`";
+        ? "`" . $tableName[0] . "`.`" . $tableName[1] . "`"
+        : "`" . $tableName . "`";
     }
 }

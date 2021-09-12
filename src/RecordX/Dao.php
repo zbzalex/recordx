@@ -83,11 +83,11 @@ abstract class Dao
 
         $this->_lastQueryString = $query;
         $this->_lastQueryParams = [
-            $id
+            $id,
         ];
 
         $st = $this->connection->executeNativeQuery($query, [
-            $id
+            $id,
         ]);
 
         $this->_error = $st->errorInfo();
@@ -105,11 +105,11 @@ abstract class Dao
         $insertColumns = $e->getInsertColumns();
         $primaryKeyColumnName = $e->getPrimaryKeyColumnName();
         $query = "update " . $e->getSqlFormatTableName()
-            . " set "
-            . implode(",", array_map(function ($column) {
-                return static::backslash($column) . "=?";
-            }, $insertColumns))
-            . " where " . static::backslash($primaryKeyColumnName) . "=?;";
+        . " set "
+        . implode(",", array_map(function ($column) {
+            return static::backslash($column) . "=?";
+        }, $insertColumns))
+        . " where " . static::backslash($primaryKeyColumnName) . "=?;";
         $params = [];
 
         foreach ($e->getColumns() as $column => $options) {
@@ -129,7 +129,7 @@ abstract class Dao
 
         $this->_error = $st->errorInfo();
     }
-    
+
     public function updateArray(array $e)
     {
         for ($i = 0; $i < count($e); $i++) {
@@ -145,10 +145,12 @@ abstract class Dao
         $result = call_user_func_array([$this, "__" . $name], $args);
         if (is_array($result) && count($result) > 0) {
 
-            $this->_lastQueryString = $result[0];
-            $this->_lastQueryParams = $args[0];
+            $queryParams = count($args) > 0 ? (array) $args[0] : [];
 
-            $st = $this->connection->executeNativeQuery($result[0], $args[0]);
+            $this->_lastQueryString = $result[0];
+            $this->_lastQueryParams = $queryParams;
+
+            $st = $this->connection->executeNativeQuery($result[0], $queryParams);
 
             $this->_error = $st->errorInfo();
 
@@ -199,7 +201,30 @@ abstract class Dao
     private function _setData($e, array $data)
     {
         foreach ($e->getColumns() as $column => $options) {
-            $e->{$column} = $data[isset($options['name']) ? $options['name'] : $column];
+
+            $primaryKey = isset($options['primaryKey']);
+            $type = isset($options['type']) ? $options['type'] : "string";
+
+            $origColumn = isset($options['name']) ? $options['name'] : $column;
+            $value = isset($data[$origColumn]) ? $data[$origColumn] : AbstractEntity::getDefaultValueByType($type);
+
+            if ($primaryKey) {
+                $value = (int) $value;
+            } else {
+                switch ($type) {
+                    case "int":
+                        $value = (int) $value;
+                        break;
+                    case "float":
+                        $value = (float) $value;
+                        break;
+                    case "double":
+                        $value = (double) $value;
+                        break;
+                }
+            }
+
+            $e->{$column} = $value;
         }
     }
 
@@ -212,7 +237,7 @@ abstract class Dao
     {
         return [
             $this->_lastQueryString,
-            $this->_lastQueryParams
+            $this->_lastQueryParams,
         ];
     }
 
