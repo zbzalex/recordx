@@ -14,7 +14,8 @@ class Player extends AbstractEntity
     public function getColumns()
     {
         return $this->extend(parent::getColumns(), [
-            "account_id" => [
+            "accountId" => [
+                "name" => "account_id",
                 "type" => "int",
             ],
             "name" => [

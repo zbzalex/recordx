@@ -40,9 +40,9 @@ abstract class Dao
             if (isset($options['primaryKey'])) {
                 continue;
             }
-
-            $column = isset($options['name']) ? $options['name'] : $column;
-            if (in_array($column, $insertColumns)) {
+            
+            $name = isset($options['name']) ? $options['name'] : $column;
+            if (in_array($name, $insertColumns)) {
                 $params[] = $e->{$column};
             }
         }
@@ -118,8 +118,8 @@ abstract class Dao
                 continue;
             }
             
-            $column = isset($column['name']) ? $column['name'] : $column;
-            if (in_array($column, $insertColumns)) {
+            $name = isset($options['name']) ? $options['name'] : $column;
+            if (in_array($name, $insertColumns)) {
                 $params[] = $e->{$column};
             }
         }

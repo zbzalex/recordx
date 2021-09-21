@@ -2,11 +2,11 @@
 
 namespace Tests;
 
+use PHPUnit\Framework\TestCase;
 use RecordX\Connection;
 use RecordX\DaoFactory;
 use RecordX\DaoProvider;
 use RecordX\DaoRegistry;
-use PHPUnit\Framework\TestCase;
 
 class DaoTest extends TestCase
 {
@@ -52,19 +52,19 @@ class DaoTest extends TestCase
 
         $player = new Player();
         $player->name = "test123";
-        $player->id = 32;
+        $player->id = 31;
+        $player->accountId = 2;
 
         //$playerDao->insert($player);
 
         $playerDao->update($player);
 
         var_dump($playerDao->getLastQueryInfo());
-        
 
         // $players = $playerDao->getAll();
 
         // var_dump($players);
-        
+
         // $player = $playerDao->getById(1);
         // var_dump($player);
 
