@@ -26,25 +26,25 @@ abstract class Dao
      */
     public function insert(AbstractEntity $e)
     {
-        $insertColumns = array_map(function ($column) {
-            return static::backslash($column);
-        }, $e->getInsertColumns());
+        $insertColumns = $e->getInsertColumns();
         $values = [];
 
         for ($i = 0; $i < count($insertColumns); $i++) {
             $values[] = "?";
         }
 
-        $query = "insert into " . $e->getSqlFormatTableName() . " (" . implode(",", $insertColumns) . ") values (" . implode(",", $values) . ");";
+        $query = "insert into " . $e->getSqlFormatTableName() . " (" . implode(",", static::backslashAll($insertColumns)) . ") values (" . implode(",", $values) . ");";
 
         $params = [];
-
         foreach ($e->getColumns() as $column => $options) {
             if (isset($options['primaryKey'])) {
                 continue;
             }
 
-            $params[] = $e->{$column};
+            $column = isset($options['name']) ? $options['name'] : $column;
+            if (in_array($column, $insertColumns)) {
+                $params[] = $e->{$column};
+            }
         }
 
         $this->_lastQueryString = $query;
@@ -104,6 +104,7 @@ abstract class Dao
     {
         $insertColumns = $e->getInsertColumns();
         $primaryKeyColumnName = $e->getPrimaryKeyColumnName();
+
         $query = "update " . $e->getSqlFormatTableName()
         . " set "
         . implode(",", array_map(function ($column) {
@@ -116,8 +117,11 @@ abstract class Dao
             if (isset($options['primaryKey'])) {
                 continue;
             }
-
-            $params[] = $e->{$column};
+            
+            $column = isset($column['name']) ? $column['name'] : $column;
+            if (in_array($column, $insertColumns)) {
+                $params[] = $e->{$column};
+            }
         }
 
         $params[] = $e->{$primaryKeyColumnName};
@@ -231,6 +235,13 @@ abstract class Dao
     public static function backslash($column)
     {
         return "`" . $column . "`";
+    }
+
+    public static function backslashAll($columns)
+    {
+        return array_map(function ($column) {
+            return static::backslash($column);
+        }, $columns);
     }
 
     public function getLastQueryInfo()

@@ -51,9 +51,14 @@ class DaoTest extends TestCase
         $playerDao = $provider->get(PlayerDao::class);
 
         $player = new Player();
-        $player->name = "test";
+        $player->name = "test123";
+        $player->id = 32;
 
-        var_dump($player->getInsertColumns());
+        //$playerDao->insert($player);
+
+        $playerDao->update($player);
+
+        var_dump($playerDao->getLastQueryInfo());
         
 
         // $players = $playerDao->getAll();
