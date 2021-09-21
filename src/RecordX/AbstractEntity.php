@@ -57,6 +57,8 @@ abstract class AbstractEntity
             if (isset($options['primaryKey'])) {
                 continue;
             }
+            
+            if (!isset($this->values[$column])) continue;
 
             $columns[] = isset($options['name']) ? $options['name'] : $column;
         }
